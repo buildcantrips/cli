@@ -1,4 +1,4 @@
-FROM node:9
+FROM node:latest
 
 RUN mkdir -p /opt/app
 
@@ -13,4 +13,4 @@ ENV PATH /opt/node_modules/.bin:$PATH
 WORKDIR /opt/app
 COPY . /opt/app
 
-CMD [ "node", "lib/app.js" ]
+CMD [ "node", "lib/App.js" ]
