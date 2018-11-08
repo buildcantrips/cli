@@ -33,7 +33,7 @@ process.on("uncaughtException", function(err) {
   Logger.error(err);
 });
 
-process.on("unhandledRejection", function(reason, p) {
+process.on("unhandledRejection", function(reason) {
   Logger.error(reason.message);
   if (process.env.DEBUG) {
     Logger.error(reason);
