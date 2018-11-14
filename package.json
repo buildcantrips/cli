@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@cantrips/basemodules": "0.12.1",
-    "@cantrips/core": "0.13.5",
+    "@cantrips/core": "file:../cantrips-core",
     "commander": "^2.12.2",
     "simple-git": "^1.85.0",
     "winston": "^2.4.0"

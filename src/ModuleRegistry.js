@@ -1,4 +1,4 @@
-import { Logger, Utils } from "cantrips-core";
+import { Logger, Utils } from "@cantrips/core";
 import tmp from "tmp";
 
 export const REGISTERED_MODULES = [];

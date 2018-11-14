@@ -677,6 +677,33 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
+"@cantrips/basemodules@0.12.1":
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/@cantrips/basemodules/-/basemodules-0.12.1.tgz#02da9d95e8d0ccf4cb14cbbef35fdb04dbbea077"
+  integrity sha512-uIt9w34pRDL8CqUVeJRTQYwUI6HC/Ub3LETPnxV+Wi2Vph4kn3IyuVhKVZoJDLqzx534erd2Z+F+FOLZcP/5sA==
+  dependencies:
+    "@cantrips/core" "^0.13.5"
+    yarn "^1.12.3"
+
+"@cantrips/core@^0.13.5":
+  version "0.13.5"
+  resolved "https://registry.yarnpkg.com/@cantrips/core/-/core-0.13.5.tgz#4328b15b51680b8161ca6442e409e3b5ed6a04c0"
+  integrity sha512-otmeqIiVnza17J5b4a1tvliWHFAECXW/JnsCYEPpH/f0WFDesQFAtcyzbUHs9wPJTn6bduxP4AWEzb0YjMqDrA==
+  dependencies:
+    ora "^3.0.0"
+    requirejs "^2.3.6"
+    simple-git "^1.106.0"
+    winston "^2.4.0"
+    yarn "^1.12.3"
+
+"@cantrips/core@file:../cantrips-core":
+  version "0.13.5"
+  dependencies:
+    ora "^3.0.0"
+    requirejs "^2.3.6"
+    simple-git "^1.106.0"
+    winston "^2.4.0"
+
 abab@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.0.tgz#aba0ab4c5eee2d4c79d3487d85450fb2376ebb0f"
@@ -1292,19 +1319,6 @@ caniuse-lite@^1.0.30000899:
   version "1.0.30000902"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000902.tgz#74eaf6ed7f1d31e5148725081c9df60051c5e2b3"
   integrity sha512-EZG6qrRHkW715hOFjOrshH2JygbLfhaC8NjjkE5EdGJZhCYbtnJMaRdicB+2AP8xKX3QzW9g3mkDUTHUoBG5rQ==
-
-"cantrips-basemodules@file:../cantrips-basemodules":
-  version "0.1.0"
-  dependencies:
-    cantrips-core "file:../../../Library/Caches/Yarn/v3/npm-cantrips-basemodules-0.1.0-368de5fd-6185-4c57-a322-ce04f1214f24-1541412209121/node_modules/cantrips-core"
-
-"cantrips-core@file:../cantrips-core":
-  version "0.1.1"
-  dependencies:
-    ora "^3.0.0"
-    requirejs "^2.3.6"
-    simple-git "^1.106.0"
-    winston "^2.4.0"
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -5610,3 +5624,8 @@ yargs@^10.0.3:
     which-module "^2.0.0"
     y18n "^3.2.1"
     yargs-parser "^8.1.0"
+
+yarn@^1.12.3:
+  version "1.12.3"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.12.3.tgz#fb4599bf1f8da01552bcc7e1571dfd4e53788203"
+  integrity sha512-8f5rWNDvkhAmCxmn8C0LsNWMxTYVk4VGKiq0sIB6HGZjaZTHsGIH87SUmVDUEd2Wk54bqKoUlbVWgQFCQhRkVw==

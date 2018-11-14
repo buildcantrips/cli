@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 import pjson from "../package.json";
-import { ConfigParser, Logger } from "cantrips-core";
+import { ConfigParser, Logger, ParameterProvider } from "@cantrips/core";
 import {
   registerModule,
   generateCliCommands,
@@ -13,16 +13,22 @@ import program from "commander";
 program.version(pjson.version);
 
 (async () => {
-  registerModule(require("cantrips-basemodules"));
+  registerModule(require("@cantrips/basemodules"));
   const config = await ConfigParser.parseConfig();
 
-  await Promise.all(
-    config.modules.map(async module => {
-      registerModule(await loadModule(module));
-    })
-  );
+  if (config && config.modules) {
+    await Promise.all(
+      config.modules.map(async module => {
+        registerModule(await loadModule(module));
+      })
+    );
+  }
 
   generateCliCommands(program);
+
+  program.command("describeCI").action(() => {
+    new ParameterProvider().describeCI();
+  });
 
   program.parse(process.argv);
 
