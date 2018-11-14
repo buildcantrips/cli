@@ -637,11 +637,12 @@
     pirates "^4.0.0"
     source-map-support "^0.5.9"
 
-"@babel/runtime@7.1.2":
-  version "7.1.2"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.1.2.tgz#81c89935f4647706fc54541145e6b4ecfef4b8e3"
-  integrity sha512-Y3SCjmhSupzFB6wcv1KmmFucH6gDVnI30WjOcicV10ju0cZjak3Jcs67YLIXBrmZYw1xCrVeJPbycFwrqNyxpg==
+"@babel/runtime@7.0.0-beta.55":
+  version "7.0.0-beta.55"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.0.0-beta.55.tgz#0bc33aa5a6ac0b012f37e25b9e6aaa2e489a916b"
+  integrity sha1-C8M6paasCwEvN+JbnmqqLkiakWs=
   dependencies:
+    core-js "^2.5.7"
     regenerator-runtime "^0.12.0"
 
 "@babel/template@^7.0.0", "@babel/template@^7.1.0", "@babel/template@^7.1.2":
@@ -677,15 +678,15 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@cantrips/basemodules@0.12.2":
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/@cantrips/basemodules/-/basemodules-0.12.2.tgz#e811c85ebe4b94921a1dd476348c2d4e3aab75c2"
-  integrity sha512-GTON+8I7BjT3iaZa917hiwXHQlJPQf7ZQz9rJDgX+BKGu0sekZJ3qFDq/ebzVDsdwAUUWbkNDfxmclOPs0PuOA==
+"@cantrips/basemodules@0.12.3":
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/@cantrips/basemodules/-/basemodules-0.12.3.tgz#e7d0d634eaef236313f7c3c83712c475a5e867c0"
+  integrity sha512-DhPCswteriDSpTe5zvoXnVgDedaaxo1E15+6gls4IU/uN2XI2je4Q7uqH1N86xs66Zr+aWxfSoLkCywELWfxeQ==
   dependencies:
-    "@cantrips/core" "^0.13.8"
+    "@cantrips/core" "^0.13.7"
     yarn "^1.12.3"
 
-"@cantrips/core@0.13.8", "@cantrips/core@^0.13.8":
+"@cantrips/core@0.13.8", "@cantrips/core@^0.13.7":
   version "0.13.8"
   resolved "https://registry.yarnpkg.com/@cantrips/core/-/core-0.13.8.tgz#84287a4368de76e1a4d03459fec1292bc116bed9"
   integrity sha512-KW7DyjB8KLXvmxu6xAWiV5+KuaxGlOCNNPP1L8FJihSCZQAGLcmG/7qcAHSzo+oN65FW46+viAfsECbr7TLT+w==
@@ -4868,10 +4869,17 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
   integrity sha1-tf3AjxKH6hF4Yo5BXiUTK3NkbG0=
 
-simple-git@^1.106.0, simple-git@^1.85.0:
+simple-git@^1.106.0:
   version "1.106.0"
   resolved "https://registry.yarnpkg.com/simple-git/-/simple-git-1.106.0.tgz#81024c7c22fafd0c386a2b338031cc60b3568b9c"
   integrity sha512-LaxKq4X9Om7bb16Cpinc36hT1YLHMM9KDQMSWJVv4Y1TGDEUuZbs+0lAk2JSKkCEO3xFjcMSx5OjvZo+i4eJvQ==
+  dependencies:
+    debug "^4.0.1"
+
+simple-git@^1.107.0:
+  version "1.107.0"
+  resolved "https://registry.yarnpkg.com/simple-git/-/simple-git-1.107.0.tgz#12cffaf261c14d6f450f7fdb86c21ccee968b383"
+  integrity sha512-t4OK1JRlp4ayKRfcW6owrWcRVLyHRUlhGd0uN6ZZTqfDq8a5XpcUdOKiGRNobHEuMtNqzp0vcJNvhYWwh5PsQA==
   dependencies:
     debug "^4.0.1"
 

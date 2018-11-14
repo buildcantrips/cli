@@ -28,10 +28,10 @@
     ]
   },
   "dependencies": {
-    "@cantrips/basemodules": "0.12.2",
+    "@cantrips/basemodules": "0.12.3",
     "@cantrips/core": "0.13.8",
     "commander": "^2.12.2",
-    "simple-git": "^1.85.0",
+    "simple-git": "^1.107.0",
     "winston": "^2.4.0"
   },
   "scripts": {
@@ -47,7 +47,7 @@
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
-    "@babel/runtime": "7.1.2",
+    "@babel/runtime": "7.0.0-beta.55",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
     "babel-jest": "^23.4.2",
