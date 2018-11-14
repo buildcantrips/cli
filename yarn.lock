@@ -677,32 +677,24 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@cantrips/basemodules@0.12.1":
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/@cantrips/basemodules/-/basemodules-0.12.1.tgz#02da9d95e8d0ccf4cb14cbbef35fdb04dbbea077"
-  integrity sha512-uIt9w34pRDL8CqUVeJRTQYwUI6HC/Ub3LETPnxV+Wi2Vph4kn3IyuVhKVZoJDLqzx534erd2Z+F+FOLZcP/5sA==
+"@cantrips/basemodules@0.12.2":
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/@cantrips/basemodules/-/basemodules-0.12.2.tgz#e811c85ebe4b94921a1dd476348c2d4e3aab75c2"
+  integrity sha512-GTON+8I7BjT3iaZa917hiwXHQlJPQf7ZQz9rJDgX+BKGu0sekZJ3qFDq/ebzVDsdwAUUWbkNDfxmclOPs0PuOA==
   dependencies:
-    "@cantrips/core" "^0.13.5"
+    "@cantrips/core" "^0.13.8"
     yarn "^1.12.3"
 
-"@cantrips/core@^0.13.5":
-  version "0.13.5"
-  resolved "https://registry.yarnpkg.com/@cantrips/core/-/core-0.13.5.tgz#4328b15b51680b8161ca6442e409e3b5ed6a04c0"
-  integrity sha512-otmeqIiVnza17J5b4a1tvliWHFAECXW/JnsCYEPpH/f0WFDesQFAtcyzbUHs9wPJTn6bduxP4AWEzb0YjMqDrA==
+"@cantrips/core@0.13.8", "@cantrips/core@^0.13.8":
+  version "0.13.8"
+  resolved "https://registry.yarnpkg.com/@cantrips/core/-/core-0.13.8.tgz#84287a4368de76e1a4d03459fec1292bc116bed9"
+  integrity sha512-KW7DyjB8KLXvmxu6xAWiV5+KuaxGlOCNNPP1L8FJihSCZQAGLcmG/7qcAHSzo+oN65FW46+viAfsECbr7TLT+w==
   dependencies:
     ora "^3.0.0"
     requirejs "^2.3.6"
     simple-git "^1.106.0"
     winston "^2.4.0"
     yarn "^1.12.3"
-
-"@cantrips/core@file:../cantrips-core":
-  version "0.13.5"
-  dependencies:
-    ora "^3.0.0"
-    requirejs "^2.3.6"
-    simple-git "^1.106.0"
-    winston "^2.4.0"
 
 abab@^2.0.0:
   version "2.0.0"
