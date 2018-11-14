@@ -28,10 +28,13 @@
     ]
   },
   "dependencies": {
+    "@babel/runtime": "7.1.5",
     "@cantrips/basemodules": "0.12.3",
     "@cantrips/core": "0.13.8",
     "commander": "^2.12.2",
     "simple-git": "^1.107.0",
+
+    "tmp": "0.0.33",
     "winston": "^2.4.0"
   },
   "scripts": {
@@ -47,7 +50,6 @@
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
-    "@babel/runtime": "7.0.0-beta.55",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
     "babel-jest": "^23.4.2",
@@ -63,7 +65,6 @@
     "eslint-plugin-standard": "^3.0.1",
     "jest": "^22.0.5",
     "jest-spec-reporter": "^1.0.5",
-    "nyc": "^13.1.0",
-    "tmp": "0.0.33"
+    "nyc": "^13.1.0"
   }
 }
