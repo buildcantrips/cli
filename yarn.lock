@@ -637,12 +637,11 @@
     pirates "^4.0.0"
     source-map-support "^0.5.9"
 
-"@babel/runtime@7.0.0-beta.55":
-  version "7.0.0-beta.55"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.0.0-beta.55.tgz#0bc33aa5a6ac0b012f37e25b9e6aaa2e489a916b"
-  integrity sha1-C8M6paasCwEvN+JbnmqqLkiakWs=
+"@babel/runtime@7.1.5":
+  version "7.1.5"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.1.5.tgz#4170907641cf1f61508f563ece3725150cc6fe39"
+  integrity sha512-xKnPpXG/pvK1B90JkwwxSGii90rQGKtzcMt2gI5G6+M0REXaq6rOHsGC2ay6/d0Uje7zzvSzjEzfR3ENhFlrfA==
   dependencies:
-    core-js "^2.5.7"
     regenerator-runtime "^0.12.0"
 
 "@babel/template@^7.0.0", "@babel/template@^7.1.0", "@babel/template@^7.1.2":
@@ -678,15 +677,12 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@cantrips/basemodules@0.12.3":
+"@cantrips/basemodules@file:../cantrips-basemodules":
   version "0.12.3"
-  resolved "https://registry.yarnpkg.com/@cantrips/basemodules/-/basemodules-0.12.3.tgz#e7d0d634eaef236313f7c3c83712c475a5e867c0"
-  integrity sha512-DhPCswteriDSpTe5zvoXnVgDedaaxo1E15+6gls4IU/uN2XI2je4Q7uqH1N86xs66Zr+aWxfSoLkCywELWfxeQ==
   dependencies:
     "@cantrips/core" "^0.13.7"
-    yarn "^1.12.3"
 
-"@cantrips/core@0.13.8", "@cantrips/core@^0.13.7":
+"@cantrips/core@^0.13.7":
   version "0.13.8"
   resolved "https://registry.yarnpkg.com/@cantrips/core/-/core-0.13.8.tgz#84287a4368de76e1a4d03459fec1292bc116bed9"
   integrity sha512-KW7DyjB8KLXvmxu6xAWiV5+KuaxGlOCNNPP1L8FJihSCZQAGLcmG/7qcAHSzo+oN65FW46+viAfsECbr7TLT+w==
@@ -696,6 +692,14 @@
     simple-git "^1.106.0"
     winston "^2.4.0"
     yarn "^1.12.3"
+
+"@cantrips/core@file:../cantrips-core":
+  version "0.13.8"
+  dependencies:
+    ora "^3.0.0"
+    requirejs "^2.3.6"
+    simple-git "^1.106.0"
+    winston "^2.4.0"
 
 abab@^2.0.0:
   version "2.0.0"

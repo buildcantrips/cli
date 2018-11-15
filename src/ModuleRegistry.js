@@ -29,19 +29,41 @@ export function registerModule(module) {
 
 export function generateCliCommands(program) {
   Object.entries(REGISTERED_MODULES).forEach(([module, descriptor]) => {
-    let command = program.command(`${module} <args>`);
+    let command = program.command(`${module} <action>`);
     descriptor.parameters.forEach(parameter => {
       command.option(`--${parameter.name} [${parameter.name}]`, parameter.help);
     });
-    command.action(async (args, options) => {
+    Object.keys(descriptor.exposed).forEach(action => {
+      //temporary backwards compatibility
+      if (descriptor.exposed[action].parameters) {
+        descriptor.exposed[action].parameters.forEach(parameter => {
+          command.option(`--${parameter.name}${!parameter.flag ? ` [${parameter.name}]` : ''}`, parameter.help);
+        })
+      }
+    })
+    command.action(async (action, options) => {
       const actor = await new descriptor["type"](options);
-      for (const action of args.split(" ")) {
+      if (!command) {
+        Logger.error(`Invalid command!`);
+        process.exit(-1);
+      }
+      //temporary backward compatibility
+      if (Array.isArray(descriptor.exposed)) {
         if (!descriptor.exposed.includes(action)) {
           Logger.error(`${action} is not an action of ${descriptor.name}`);
           process.exit(-1);
         }
-        actor[action]();
+      } else {
+        if (!(action in descriptor.exposed)) {
+          Logger.error(`${action} is not an action of ${descriptor.name}`);
+          process.exit(-1);
+        }
       }
+
+      Logger.debug(
+        `Running command ${descriptor.name} ${action} with options: ${options}`
+      );
+      actor[action](options);
     });
   });
 }
