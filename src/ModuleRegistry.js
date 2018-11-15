@@ -27,6 +27,11 @@ export function registerModule(module) {
   });
 }
 
+function generateArgumentString(options) {
+  const argumentNames = Object.keys(options).filter(option => !option.startsWith('_') && !['parent', 'commands', 'options'].includes(option))
+  return argumentNames.map(arg => `--${arg} ${options[arg]}`).join(' ')
+}
+
 export function generateCliCommands(program) {
   Object.entries(REGISTERED_MODULES).forEach(([module, descriptor]) => {
     let command = program.command(`${module} <action>`);
@@ -61,7 +66,7 @@ export function generateCliCommands(program) {
       }
 
       Logger.debug(
-        `Running command ${descriptor.name} ${action} with options: ${options}`
+        `Running command ${descriptor.name} ${action} with options: ${generateArgumentString(options)}`
       );
       actor[action](options);
     });
