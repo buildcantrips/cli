@@ -678,14 +678,25 @@
     to-fast-properties "^2.0.0"
 
 "@cantrips/basemodules@<1.0.0":
-  version "0.12.6"
-  resolved "https://registry.yarnpkg.com/@cantrips/basemodules/-/basemodules-0.12.6.tgz#389e832793674455793c3767fb853c5cccf6d4df"
-  integrity sha512-nE60AnMaPfoMGT+Aszzy3HVIIKedq24xKgX6wOp4wJXsNfZS+EMFXkwlWKUkLffLRIP4I6GKX+DnooeWb9mvWQ==
+  version "0.12.8"
+  resolved "https://registry.yarnpkg.com/@cantrips/basemodules/-/basemodules-0.12.8.tgz#3150ba2f87528f1b0179abb01a3f7c672bba80e7"
+  integrity sha512-ENlRIuVXLQpm/wN5voP3wAmm8bU6VeTPa2LfSB4OH7qZROsKSjKsu2qrjVblHextmW3p4q2N1sazjtFfW1BW2w==
   dependencies:
     "@cantrips/core" "^0.13.10"
     yarn "^1.12.3"
 
-"@cantrips/core@<1.0.0", "@cantrips/core@^0.13.10":
+"@cantrips/core@<1.0.0":
+  version "0.13.13"
+  resolved "https://registry.yarnpkg.com/@cantrips/core/-/core-0.13.13.tgz#dbec7e00ccfd32a95d1a19da2e6ede2e3c9ab4ce"
+  integrity sha512-NIu+UZxpc9IomaT5iDKz/G94rgHXBWv4aUfSOZYThpOhN0ALb+VQIK9t+lYMk5tDyAKGZ+QF7DrtrxdYZLXOYA==
+  dependencies:
+    ora "^3.0.0"
+    requirejs "^2.3.6"
+    simple-git "^1.106.0"
+    winston "^2.4.0"
+    yarn "^1.12.3"
+
+"@cantrips/core@^0.13.10":
   version "0.13.10"
   resolved "https://registry.yarnpkg.com/@cantrips/core/-/core-0.13.10.tgz#102f3a99727d7da9e2189ed400dfb12c8e4fd3f4"
   integrity sha512-Th51TApyX+g7AjhKUUDWqtp0bu9XVsJcxxIkJtzBp217zyyHT4vP5QigfHuAH3Ut6K1eIO8/lETQp9FNyhqUEQ==

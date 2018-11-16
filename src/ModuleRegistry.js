@@ -76,17 +76,25 @@ export function generateCliCommands(program) {
 export async function loadModule(module) {
   const tempDir = tmp.dirSync({ unsafeCleanup: true });
   return new Promise(async resolve => {
+    Logger.debug(`Loading module: ${module}`)
     if (module.startsWith("file:")) {
       resolve(await require(`${process.cwd()}/${module.replace("file:", "")}`));
+    } else if (module.startsWith("git@")) {
+      await Utils.runCommand(`cd ${tempDir.name} && git clone ${module}`, "", { silent:true })
+      let moduleName = module.split("/").slice(-1)[0].replace(".git", "", { silent:true })
+      await Utils.runCommand(`cd ${tempDir.name}/${moduleName} && npm i`, "", { silent:true })
+      await Utils.runCommand(`cd ${tempDir.name}/${moduleName} && npm run babel:build`, "", { silent:true })
+      resolve(require(`${tempDir.name}/${moduleName}`));
     } else {
       await Utils.runCommand(`cd ${tempDir.name} && npm init --force`, "", {
         silent: true
       });
       await Utils.runCommand(
-        `npm install --prefix ${tempDir} ${module}`,
+        `npm install --prefix ${tempDir.name} ${module}`,
         `Installing module ${module}`
       );
-      resolve(require(`${tempDir}/node_modules/${module.replace("../", "")}`));
+      resolve(require(`${tempDir.name}/node_modules/${module}`));
+      Logger.debug(`Loading module: ${module} - Success`)
     }
   });
 }
