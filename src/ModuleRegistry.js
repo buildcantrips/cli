@@ -1,100 +1,103 @@
-import { Logger, Utils } from "@cantrips/core";
-import tmp from "tmp";
+import { Logger, Utils } from "@cantrips/core"
+import tmp from "tmp"
+import path from "path"
 
-export const REGISTERED_MODULES = [];
+export const REGISTERED_MODULES = []
 
-function isValidModule(module) {
-  if (!module) return false;
-  return "meta" in module && "exposed" in module;
-}
+export const getRegisteredModules = () => REGISTERED_MODULES
 
-function isValidModuleGroup(module) {
-  if (!module) return false;
-  return "moduleGroup" in module;
+const isValidModule = module =>
+  module && "meta" in module && "exposed" in module
+
+const isValidModuleGroup = moduleGroup =>
+  moduleGroup && "moduleGroup" in moduleGroup
+
+export function listModules() {
+  Logger.info("\n" + Object.keys(REGISTERED_MODULES).join("\n"))
 }
 
 export function registerModule(module) {
   Object.keys(module).forEach(subModule => {
     if (isValidModule(module[subModule])) {
-      let { meta, exposed } = module[subModule];
-      REGISTERED_MODULES[meta.name] = { ...meta, name: subModule, exposed };
+      let { meta, exposed } = module[subModule]
+      REGISTERED_MODULES[meta.name] = { ...meta, name: subModule, exposed }
     } else if (isValidModuleGroup(module[subModule])) {
-      delete module[subModule].moduleGroup;
-      registerModule(module[subModule]);
+      delete module[subModule].moduleGroup
+      registerModule(module[subModule])
     } else {
-      Logger.warn(`${subModule} is not a valid module or module group.`);
+      Logger.warn(`${subModule} is not a valid module or module group.`)
     }
-  });
+  })
 }
 
-function generateArgumentString(options) {
-  const argumentNames = Object.keys(options).filter(option => !option.startsWith('_') && !['parent', 'commands', 'options'].includes(option))
-  return argumentNames.map(arg => `--${arg} ${options[arg]}`).join(' ')
+async function requireModuleFromLocalPath(module) {
+  return require(`${process.cwd()}/${module.replace("file:", "")}`)
 }
 
-export function generateCliCommands(program) {
-  Object.entries(REGISTERED_MODULES).forEach(([module, descriptor]) => {
-    let command = program.command(`${module} <action>`);
-    descriptor.parameters.forEach(parameter => {
-      command.option(`--${parameter.name} [${parameter.name}]`, parameter.help);
-    });
-    Object.keys(descriptor.exposed).forEach(action => {
-      //temporary backwards compatibility
-      if (descriptor.exposed[action].parameters) {
-        descriptor.exposed[action].parameters.forEach(parameter => {
-          command.option(`--${parameter.name}${!parameter.flag ? ` [${parameter.name}]` : ''}`, parameter.help);
-        })
-      }
-    })
-    command.action(async (action, options) => {
-      const actor = await new descriptor["type"](options);
-      if (!command) {
-        Logger.error(`Invalid command!`);
-        process.exit(-1);
-      }
-      //temporary backward compatibility
-      if (Array.isArray(descriptor.exposed)) {
-        if (!descriptor.exposed.includes(action)) {
-          Logger.error(`${action} is not an action of ${descriptor.name}`);
-          process.exit(-1);
-        }
-      } else {
-        if (!(action in descriptor.exposed)) {
-          Logger.error(`${action} is not an action of ${descriptor.name}`);
-          process.exit(-1);
-        }
-      }
+function getModuleNameFromGitUrl(gitUrl) {
+  if (!gitUrl || !gitUrl.startsWith("git@") || !gitUrl.endsWith(".git")) {
+    throw new Error(
+      `Invlid git url for module in configuration file: ${gitUrl}`
+    )
+  }
+  return gitUrl
+    .split("/")
+    .slice(-1)[0]
+    .replace(".git", "")
+}
 
-      Logger.debug(
-        `Running command ${descriptor.name} ${action} with options: ${generateArgumentString(options)}`
-      );
-      actor[action](options);
-    });
-  });
+async function requireModuleFromGit(gitUrl) {
+  const tempDir = tmp.dirSync({ unsafeCleanup: true })
+
+  await Utils.runCommand(
+    `cd ${tempDir.name} && git clone ${gitUrl}`,
+    `Cloning repository: ${gitUrl}`,
+    {
+      silent: true
+    }
+  )
+  let moduleName = getModuleNameFromGitUrl(gitUrl)
+  let modulePath = path.join(tempDir.name, moduleName)
+  await Utils.runCommand(
+    `cd ${modulePath} && npm i`,
+    "Installing dependencies",
+    {
+      silent: true
+    }
+  )
+  await Utils.runCommand(
+    `cd ${modulePath} && npm run babel:build`,
+    "Runing babel build",
+    {
+      silent: true
+    }
+  )
+  return require(`${modulePath}`)
+}
+
+async function requireModuleFromNpm(module) {
+  const tempDir = tmp.dirSync({ unsafeCleanup: true })
+  await Utils.runCommand(`cd ${tempDir.name} && npm init --force`, "", {
+    silent: true
+  })
+  await Utils.runCommand(
+    `npm install --prefix ${tempDir.name} ${module}`,
+    `Installing module ${module}`,
+    { silent: true }
+  )
+  return require(`${tempDir.name}/node_modules/${module}`)
 }
 
 export async function loadModule(module) {
-  const tempDir = tmp.dirSync({ unsafeCleanup: true });
   return new Promise(async resolve => {
     Logger.debug(`Loading module: ${module}`)
     if (module.startsWith("file:")) {
-      resolve(await require(`${process.cwd()}/${module.replace("file:", "")}`));
+      resolve(await requireModuleFromLocalPath())
     } else if (module.startsWith("git@")) {
-      await Utils.runCommand(`cd ${tempDir.name} && git clone ${module}`, "", { silent:true })
-      let moduleName = module.split("/").slice(-1)[0].replace(".git", "", { silent:true })
-      await Utils.runCommand(`cd ${tempDir.name}/${moduleName} && npm i`, "", { silent:true })
-      await Utils.runCommand(`cd ${tempDir.name}/${moduleName} && npm run babel:build`, "", { silent:true })
-      resolve(require(`${tempDir.name}/${moduleName}`));
+      resolve(await requireModuleFromGit(module))
     } else {
-      await Utils.runCommand(`cd ${tempDir.name} && npm init --force`, "", {
-        silent: true
-      });
-      await Utils.runCommand(
-        `npm install --prefix ${tempDir.name} ${module}`,
-        `Installing module ${module}`
-      );
-      resolve(require(`${tempDir.name}/node_modules/${module}`));
-      Logger.debug(`Loading module: ${module} - Success`)
+      resolve(await requireModuleFromNpm(module))
     }
-  });
+    Logger.debug(`Loading module: ${module} - Success`)
+  })
 }
