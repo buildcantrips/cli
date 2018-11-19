@@ -23,7 +23,7 @@ program.version(pjson.version);
       })
     );
   }
-
+  
   generateCliCommands(program);
 
   program.command("describeCI").action(() => {
@@ -37,6 +37,7 @@ program.version(pjson.version);
 
 process.on("uncaughtException", function(err) {
   Logger.error(err);
+  process.exit(-1);
 });
 
 process.on("unhandledRejection", function(reason) {
@@ -44,4 +45,5 @@ process.on("unhandledRejection", function(reason) {
   if (process.env.DEBUG) {
     Logger.error(reason);
   }
+  process.exit(-1);
 });
