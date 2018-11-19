@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.1.5",
-    "@cantrips/basemodules": "0.12.9",
+    "@cantrips/basemodules": "0.12.10",
     "@cantrips/core": "0.13.14",
     "commander": "^2.12.2",
     "simple-git": "^1.107.0",
