@@ -1,4 +1,4 @@
-import { Logger, Utils } from "@cantrips/core"
+import { Logger, ProcessUtils } from "@cantrips/core"
 import tmp from "tmp"
 import path from "path"
 
@@ -49,7 +49,7 @@ function getModuleNameFromGitUrl(gitUrl) {
 async function requireModuleFromGit(gitUrl) {
   const tempDir = tmp.dirSync({ unsafeCleanup: true })
 
-  await Utils.runCommand(
+  await ProcessUtils.runCommand(
     `cd ${tempDir.name} && git clone ${gitUrl}`,
     `Cloning repository: ${gitUrl}`,
     {
@@ -58,14 +58,14 @@ async function requireModuleFromGit(gitUrl) {
   )
   let moduleName = getModuleNameFromGitUrl(gitUrl)
   let modulePath = path.join(tempDir.name, moduleName)
-  await Utils.runCommand(
+  await ProcessUtils.runCommand(
     `cd ${modulePath} && npm i`,
     "Installing dependencies",
     {
       silent: true
     }
   )
-  await Utils.runCommand(
+  await ProcessUtils.runCommand(
     `cd ${modulePath} && npm run babel:build`,
     "Runing babel build",
     {
@@ -77,10 +77,10 @@ async function requireModuleFromGit(gitUrl) {
 
 async function requireModuleFromNpm(module) {
   const tempDir = tmp.dirSync({ unsafeCleanup: true })
-  await Utils.runCommand(`cd ${tempDir.name} && npm init --force`, "", {
+  await ProcessUtils.runCommand(`cd ${tempDir.name} && npm init --force`, "", {
     silent: true
   })
-  await Utils.runCommand(
+  await ProcessUtils.runCommand(
     `npm install --prefix ${tempDir.name} ${module}`,
     `Installing module ${module}`,
     { silent: true }
