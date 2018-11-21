@@ -31,6 +31,7 @@ export function registerModule(module) {
 }
 
 async function requireModuleFromLocalPath(module) {
+  Logger.debug(`Loading package from local path: ${module}`)
   return require(`${process.cwd()}/${module.replace("file:", "")}`)
 }
 
@@ -47,6 +48,7 @@ function getModuleNameFromGitUrl(gitUrl) {
 }
 
 async function requireModuleFromGit(gitUrl) {
+  Logger.debug(`Loading module from git: ${gitUrl}`)
   const tempDir = tmp.dirSync({ unsafeCleanup: true })
 
   await ProcessUtils.runCommand(
@@ -76,6 +78,7 @@ async function requireModuleFromGit(gitUrl) {
 }
 
 async function requireModuleFromNpm(module) {
+  Logger.debug(`Loading module from npm: ${module}`)
   const tempDir = tmp.dirSync({ unsafeCleanup: true })
   await ProcessUtils.runCommand(`cd ${tempDir.name} && npm init --force`, "", {
     silent: true
