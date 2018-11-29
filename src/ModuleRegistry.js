@@ -233,16 +233,12 @@ class ModuleRegistry {
   async loadModule(module) {
     return new Promise(async resolve => {
       Logger.debug(`Loading module: ${module.name} from ${module.type}`)
-      switch (module.type) {
-        case ModuleTypes.Local:
-          resolve(await this.requireModuleFromLocalPath(module))
-          break;
-        case ModuleTypes.Git:
-          resolve(await this.requireModuleFromGit(module))
-          break;
-        case ModuleTypes.Npm:
-          resolve(await this.requireModuleFromNpm(module))
-          break;
+      if (module.type === ModuleTypes.Local) {
+        resolve(await this.requireModuleFromLocalPath(module))
+      } else if (module.type === ModuleTypes.Git) {
+        resolve(await this.requireModuleFromGit(module))
+      } else {
+        resolve(await this.requireModuleFromNpm(module))
       }
 
       Logger.debug(`Loading module: ${module.name} - Success`)
