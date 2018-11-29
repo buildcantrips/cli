@@ -2,11 +2,7 @@
 
 import pjson from "../package.json"
 import { ConfigParser, Logger } from "@cantrips/core"
-import {
-  registerModule,
-  loadModule,
-  getRegisteredModules
-} from "./ModuleRegistry"
+import ModuleRegistry from "./ModuleRegistry"
 import {
   generateCliCommandsForModules,
   attachMiscCliCommands
@@ -17,18 +13,20 @@ import program from "commander"
 program.version(pjson.version);
 
 (async () => {
-  registerModule(require("@cantrips/basemodules"))
+  ModuleRegistry.registerModule(require("@cantrips/basemodules"))
   const config = await ConfigParser.parseConfig()
-
   if (config && config.modules) {
     await Promise.all(
-      config.modules.map(async module => {
-        registerModule(await loadModule(module))
+      Object.keys(config.modules).map(async moduleName => {
+        return ModuleRegistry.registerExternalModule(
+          moduleName,
+          config.modules[moduleName]
+        )
       })
     )
   }
 
-  generateCliCommandsForModules(program, getRegisteredModules())
+  generateCliCommandsForModules(program, ModuleRegistry.getRegisteredModules())
 
   attachMiscCliCommands(program)
 

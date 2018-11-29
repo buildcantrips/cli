@@ -32,6 +32,7 @@
     "@cantrips/basemodules": "0.12.11",
     "@cantrips/core": "0.13.16",
     "commander": "^2.12.2",
+    "fs-extra": "^7.0.1",
     "simple-git": "^1.107.0",
     "tmp": "0.0.33",
     "winston": "^2.4.0"

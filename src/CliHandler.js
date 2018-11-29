@@ -1,12 +1,12 @@
 import { Logger, ParameterProvider } from "@cantrips/core"
-import { listModules } from "./ModuleRegistry"
+import ModuleRegistry from "./ModuleRegistry"
 
 export function attachMiscCliCommands(program) {
   program.command("describeCI").action(() => {
     new ParameterProvider().describeCI()
   })
   program.command("listModules").action(() => {
-    listModules()
+    ModuleRegistry.listModules()
   })
 }
 
