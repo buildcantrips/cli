@@ -37,8 +37,6 @@ program.version(pjson.version);
 
 process.on("uncaughtException", function(err) {
   Logger.error(err)
-  console.log(err)
-
   process.exit(-1)
 })
 
