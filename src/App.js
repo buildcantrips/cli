@@ -13,12 +13,12 @@ import program from "commander"
 program.version(pjson.version);
 
 (async () => {
-  ModuleRegistry.registerModule(require("@cantrips/basemodules"))
+  ModuleRegistry.registerRequiredModule(require("@cantrips/basemodules"))
   const config = await ConfigParser.parseConfig()
   if (config && config.modules) {
     await Promise.all(
       Object.keys(config.modules).map(async moduleName => {
-        return ModuleRegistry.registerExternalModule(
+        return ModuleRegistry.registerModule(
           moduleName,
           config.modules[moduleName]
         )
@@ -37,6 +37,8 @@ program.version(pjson.version);
 
 process.on("uncaughtException", function(err) {
   Logger.error(err)
+  console.log(err)
+
   process.exit(-1)
 })
 

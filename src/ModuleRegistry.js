@@ -12,36 +12,159 @@ const ModuleTypes = Object.freeze({
   Npm: "Npm"
 })
 
-// TODO: factory
+class ModuleFactory {
+  create(moduleName, version) {
+    if (version.startsWith("file:")) {
+      return new LocalModule(moduleName, version)
+    } else if (version.startsWith("git@")) {
+      return new GitModule(moduleName, version)
+    } else {
+      return new NpmModule(moduleName, version)
+    }
+  }
+}
+
 class Module {
   constructor(moduleName, version) {
-    this.type = this.determineModuleType(version)
     this.name = moduleName
     this.version = version
-    this.path = this.determineModulePath(version)
   }
 
-  determineModulePath() {
-    switch (this.type) {
-      case ModuleTypes.Npm:
-        return path.join(this.name, this.version)
-      case ModuleTypes.Local:
-        return path.join("local")
-      case ModuleTypes.Git:
-        var [repository, rawVersion] = this.version.split("#")
-        repository = repository.replace(/^git@/, "").replace(/.git$/, "")
-        return path.join(this.name, repository, rawVersion || "master")
-    }
+  async _loadModule(delegate) {
+    return new Promise(async resolve => {
+      Logger.debug(`Loading module: ${this.name} from ${this.type}`)
+      resolve(await delegate())
+      Logger.debug(`Loading module: ${this.name} - Success`)
+    })
   }
 
-  determineModuleType(moduleEntryString) {
-    if (moduleEntryString.startsWith("file:")) {
-      return ModuleTypes.Local
-    } else if (moduleEntryString.startsWith("git@")) {
-      return ModuleTypes.Git
-    } else {
-      return ModuleTypes.Npm
+  async _loadModuleFromCache(modulesFolderPath, delegate) {
+    Logger.debug(`Loading module from cache: ${this.name} - ${this.version}`)
+
+    const moduleFullPath = path.join(modulesFolderPath, this.path)
+    if (delegate) {
+      await delegate()
     }
+
+    return require(moduleFullPath)
+  }
+
+  async loadModuleFromCache(modulesFolderPath) {
+    return this._loadModuleFromCache(modulesFolderPath)
+  }
+}
+
+class GitModule extends Module {
+  constructor(moduleName, version) {
+    super(moduleName, version)
+    this.type = ModuleTypes.Git
+
+    var [repository, rawVersion] = this.version.split("#")
+    repository = repository.replace(/^git@/, "").replace(/.git$/, "")
+    this.path = path.join(this.name, repository, rawVersion || "master")
+  }
+
+  async loadModule(modulesFolderPath) {
+    return this._loadModule(async () => {
+      const moduleDirectory = path.join(modulesFolderPath, this.path)
+      fs.emptyDirSync(moduleDirectory)
+
+      await ProcessUtils.runCommand(
+        `cd ${moduleDirectory} && git clone ${this.version} .`,
+        `Cloning repository: ${this.version}`,
+        {
+          silent: true
+        }
+      )
+      await ProcessUtils.runCommand(
+        `cd ${moduleDirectory} && npm i`,
+        "Installing dependencies",
+        {
+          silent: true
+        }
+      )
+      // todo fix babel reference
+      await ProcessUtils.runCommand(
+        `cd ${moduleDirectory} && node_modules/.bin/babel src -d lib`,
+        "Runing babel build",
+        {
+          silent: true
+        }
+      )
+      return require(`${moduleDirectory}`)
+    })
+  }
+}
+
+class NpmModule extends Module {
+  constructor(moduleName, version) {
+    super(moduleName, version)
+    this.type = ModuleTypes.Npm
+    this.path = path.join(this.name, this.version)
+  }
+
+  async loadModule(modulesFolderPath) {
+    return this._loadModule(async () => {
+      const tempDir = tmp.dirSync({ unsafeCleanup: true })
+      const moduleDirectory = path.join(modulesFolderPath, this.path)
+      fs.emptyDirSync(moduleDirectory)
+
+      await ProcessUtils.runCommand(
+        `cd ${tempDir.name} && npm init --force`,
+        "",
+        {
+          silent: true
+        }
+      )
+      await ProcessUtils.runCommand(
+        `cd ${tempDir.name} && npm install ${this.name}@${this.version}`,
+        `Installing module ${this.name}@${this.version}`,
+        { silent: true }
+      )
+
+      fs.copySync(
+        path.join(tempDir.name, "node_modules", this.name),
+        moduleDirectory
+      )
+      await ProcessUtils.runCommand(
+        `cd ${moduleDirectory} && npm install`,
+        `Installing dependencies for ${this.name}@${this.version}`,
+        { silent: true }
+      )
+
+      return require(`${moduleDirectory}`)
+    })
+  }
+}
+
+class LocalModule extends Module {
+  constructor(moduleName, version) {
+    super(moduleName, version)
+    this.type = ModuleTypes.Local
+    this.path = "local"
+  }
+
+  async loadModule() {
+    return this._loadModule(() => {
+      const rawPath = `${this.version.replace("file:", "")}`
+      return require(`${process.cwd()}/${rawPath}`)
+    })
+  }
+
+  async loadModuleFromCache(modulesFolderPath) {
+    return this._loadModuleFromCache(modulesFolderPath, async () => {
+      const moduleFullPath = path.join(modulesFolderPath, this.path)
+      var result = await ProcessUtils.runCommand(
+        `cd ${moduleFullPath} && git fetch && git diff @{upstream} | cat`
+      )
+
+      if (result) {
+        Logger.debug(
+          `Pulling new version for module ${this.name} from ${this.version}`
+        )
+        await ProcessUtils.runCommand(`cd ${moduleFullPath} && git pull`)
+      }
+    })
   }
 }
 
@@ -56,6 +179,7 @@ class ModuleRegistry {
       this.modulesFolderPath,
       "modules.json"
     )
+    this.moduleFactory = new ModuleFactory()
     this.initializeRegistry()
 
     Logger.debug(`ModuleCache initialized on path: ${this.modulesFolderPath}`)
@@ -77,41 +201,14 @@ class ModuleRegistry {
   }
 
   getRegisteredModules = () => this.registeredModules;
-  isValidModule = module => module && "meta" in module && "exposed" in module;
+  isValidRequiredModule = module =>
+    module && "meta" in module && "exposed" in module;
 
-  isValidModuleGroup = moduleGroup =>
+  isValidRequiredModuleGroup = moduleGroup =>
     moduleGroup && "moduleGroup" in moduleGroup;
 
   listModules() {
     Logger.info("\n" + Object.keys(this.registeredModules).join("\n"))
-  }
-
-  async isModuleUpToDate(module) {
-    switch (module.type) {
-      case ModuleTypes.Local:
-        return false
-      case ModuleTypes.Git:
-        var result = await ProcessUtils.runCommand(
-          `cd ${this.path} && git diff @{upstream} | cat`
-        )
-        if (result) {
-          await ProcessUtils.runCommand(`cd ${this.path} && git pull`)
-        }
-        break
-      case ModuleTypes.Npm:
-        return false
-    }
-  }
-  async registerExternalModule(moduleName, version) {
-    const module = new Module(moduleName, version)
-    if (this.isModuleCached(module)) {
-      await this.loadCachedModule(module)
-    } else {
-      this.registerModule(await this.loadModule(module))
-      if (module.type !== ModuleTypes.Local) {
-        this.cacheModule(module)
-      }
-    }
   }
 
   saveModuleCacheDescriptor() {
@@ -132,133 +229,43 @@ class ModuleRegistry {
       cachedModule =>
         cachedModule.name === module.name &&
         cachedModule.type === module.type &&
-        cachedModule.version === module.version
+        cachedModule.version === module.version &&
+        cachedModule.path === module.path
     )
   }
 
-  async loadCachedModule(module) {
-    Logger.debug(
-      `Loading module from cache: ${module.name} - ${module.version}`
-    )
-    // todo: handle this with separate module types
-    const moduleFullPath = path.join(this.modulesFolderPath, module.path)
-    if (module.type === ModuleTypes.Git) {
-      var result = await ProcessUtils.runCommand(
-        `cd ${moduleFullPath} && git fetch && git diff @{upstream} | cat`
+  async registerModule(moduleName, version) {
+    const module = this.moduleFactory.create(moduleName, version)
+    if (this.isModuleCached(module)) {
+      this.registerRequiredModule(
+        await module.loadModuleFromCache(this.modulesFolderPath)
       )
-
-      if (result) {
-        Logger.debug(
-          `Pulling new version for module ${module.name} from ${module.version}`
-        )
-        await ProcessUtils.runCommand(`cd ${moduleFullPath} && git pull`)
+    } else {
+      this.registerRequiredModule(
+        await module.loadModule(this.modulesFolderPath)
+      )
+      if (module.type !== ModuleTypes.Local) {
+        this.cacheModule(module)
       }
     }
-
-    this.registerModule(require(moduleFullPath))
   }
 
-  async requireModuleFromLocalPath(module) {
-    const rawPath = `${module.version.replace("file:", "")}`
-    Logger.debug(`Loading package from local path: ${rawPath}`)
-    return require(`${process.cwd()}/${rawPath}`)
-  }
-
-  async requireModuleFromGit(module) {
-    Logger.debug(`Loading module from git: ${module.version}`)
-    const moduleDirectory = path.join(this.modulesFolderPath, module.path)
-    fs.emptyDirSync(moduleDirectory)
-
-    await ProcessUtils.runCommand(
-      `cd ${moduleDirectory} && git clone ${module.version} .`,
-      `Cloning repository: ${module.version}`,
-      {
-        silent: true
-      }
-    )
-    await ProcessUtils.runCommand(
-      `cd ${moduleDirectory} && npm i`,
-      "Installing dependencies",
-      {
-        silent: true
-      }
-    )
-    // todo fix babel reference
-    await ProcessUtils.runCommand(
-      `cd ${moduleDirectory} && node_modules/.bin/babel src -d lib`,
-      "Runing babel build",
-      {
-        silent: true
-      }
-    )
-    return require(`${moduleDirectory}`)
-  }
-
-  async requireModuleFromNpm(module) {
-    Logger.debug(`Loading module from npm: ${module.name}`)
-    const tempDir = tmp.dirSync({ unsafeCleanup: true })
-    const moduleDirectory = path.join(this.modulesFolderPath, module.path)
-    fs.emptyDirSync(moduleDirectory)
-
-    await ProcessUtils.runCommand(
-      `cd ${tempDir.name} && npm init --force`,
-      "",
-      {
-        silent: true
-      }
-    )
-    await ProcessUtils.runCommand(
-      `cd ${tempDir.name} && npm install ${module.name}@${module.version}`,
-      `Installing module ${module.name}@${module.version}`,
-      { silent: true }
-    )
-
-    fs.copySync(
-      path.join(tempDir.name, "node_modules", module.name),
-      moduleDirectory
-    )
-    await ProcessUtils.runCommand(
-      `cd ${moduleDirectory} && npm install`,
-      `Installing dependencies for ${module.name}@${module.version}`,
-      { silent: true }
-    )
-
-    return require(`${moduleDirectory}`)
-  }
-
-  loadModuleFromCache(module) {
-    return require(path.join(this.modulesFolderPath, module.path))
-  }
-
-  async loadModule(module) {
-    return new Promise(async resolve => {
-      Logger.debug(`Loading module: ${module.name} from ${module.type}`)
-      if (module.type === ModuleTypes.Local) {
-        resolve(await this.requireModuleFromLocalPath(module))
-      } else if (module.type === ModuleTypes.Git) {
-        resolve(await this.requireModuleFromGit(module))
-      } else {
-        resolve(await this.requireModuleFromNpm(module))
-      }
-
-      Logger.debug(`Loading module: ${module.name} - Success`)
-    })
-  }
-
-  registerModule(module) {
-    Object.keys(module).forEach(subModule => {
-      if (this.isValidModule(module[subModule])) {
-        let { meta, exposed } = module[subModule]
+  registerRequiredModule(requiredModule) {
+    Object.keys(requiredModule).forEach(subModule => {
+      if (this.isValidRequiredModule(requiredModule[subModule])) {
+        let { meta, exposed } = requiredModule[subModule]
         this.registeredModules[meta.name] = {
           ...meta,
           name: subModule,
           exposed
         }
-      } else if (this.isValidModuleGroup(module[subModule])) {
-        delete module[subModule].moduleGroup
-        this.registerModule(module[subModule])
+      } else if (this.isValidRequiredModuleGroup(requiredModule[subModule])) {
+        delete requiredModule[subModule].moduleGroup
+        this.registerRequiredModule(requiredModule[subModule])
       } else {
-        Logger.warn(`${subModule} is not a valid module or module group.`)
+        Logger.warn(
+          `${subModule} is not a valid cantrips module or module group.`
+        )
       }
     })
   }
