@@ -10,7 +10,7 @@
   "author": "csaba.makara@gmail.com",
   "license": "MIT",
   "jest": {
-    "collectCoverage": true,
+    "collectCoverage": false,
     "collectCoverageFrom": [
       "src/**/*.{js,jsx}",
       "!src/App.js",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.1.5",
-    "@cantrips/basemodules": "0.12.12",
+    "@cantrips/basemodules": "0.12.14",
     "@cantrips/core": "0.13.17",
     "commander": "^2.12.2",
     "fs-extra": "^7.0.1",
@@ -38,7 +38,7 @@
     "winston": "^2.4.0"
   },
   "scripts": {
-    "test": "echo 'ok'",
+    "test": "jest --runInBand src",
     "lint": "eslint src",
     "babel:build": "babel src -d lib",
     "babel:watch": "babel src -d lib -w"
