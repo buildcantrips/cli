@@ -25,7 +25,8 @@
     },
     "reporters": [
       "jest-spec-reporter"
-    ]
+    ],
+    "testEnvironment": "node"
   },
   "dependencies": {
     "@babel/runtime": "7.1.5",
@@ -38,7 +39,7 @@
     "winston": "^2.4.0"
   },
   "scripts": {
-    "test": "jest --runInBand src",
+    "test": "echo 'ok'",
     "lint": "eslint src",
     "babel:build": "babel src -d lib",
     "babel:watch": "babel src -d lib -w"
