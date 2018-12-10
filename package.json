@@ -1,6 +1,6 @@
 {
   "name": "@cantrips/cli",
-  "version": "0.12.17",
+  "version": "0.12.18",
   "description": "Cantrips cli for more descriptive builds",
   "main": "./lib/App.js",
   "repository": "https://github.com/buildcantrips/cli.git",
