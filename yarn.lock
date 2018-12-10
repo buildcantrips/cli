@@ -644,10 +644,10 @@
   dependencies:
     regenerator-runtime "^0.12.0"
 
-"@babel/runtime@7.1.5":
-  version "7.1.5"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.1.5.tgz#4170907641cf1f61508f563ece3725150cc6fe39"
-  integrity sha512-xKnPpXG/pvK1B90JkwwxSGii90rQGKtzcMt2gI5G6+M0REXaq6rOHsGC2ay6/d0Uje7zzvSzjEzfR3ENhFlrfA==
+"@babel/runtime@7.2.0":
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.2.0.tgz#b03e42eeddf5898e00646e4c840fa07ba8dcad7f"
+  integrity sha512-oouEibCbHMVdZSDlJBO6bZmID/zA/G/Qx3H1d3rSNPTD+L8UNKvCat7aKWSJ74zYbm5zWGh0GQN0hKj8zYFTCg==
   dependencies:
     regenerator-runtime "^0.12.0"
 
@@ -684,30 +684,20 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@cantrips/basemodules@0.12.14":
-  version "0.12.14"
-  resolved "https://registry.yarnpkg.com/@cantrips/basemodules/-/basemodules-0.12.14.tgz#39f7f98215e0816beb49db9db8173a0f91b35ebe"
-  integrity sha512-XLdunCKmp+HHsueVh0sdv5P5g0vo3KaqM+lExpXdcrRRzcxlo4qjdaIqi8yhQ4Lvb0UTl36sq8n2hejN9Wp1Zw==
+"@cantrips/basemodules@0.12.18":
+  version "0.12.18"
+  resolved "https://registry.yarnpkg.com/@cantrips/basemodules/-/basemodules-0.12.18.tgz#ed7fc8db701ca423c083b143ec8351e7f862f62d"
+  integrity sha512-z2KfaJvvDaj8hcQdB2tWM1cAlamLY6MAA2s3IzrwxrifWBpjfbqdqfZGIUZhMS92tiF7Bxb4ORSu0HynPOsAvw==
   dependencies:
+    "@babel/register" "^7.0.0"
     "@babel/runtime" "7.1.2"
-    "@cantrips/core" "0.13.14"
+    "@cantrips/core" "0.13.19"
     yarn "^1.12.3"
 
-"@cantrips/core@0.13.14":
-  version "0.13.14"
-  resolved "https://registry.yarnpkg.com/@cantrips/core/-/core-0.13.14.tgz#2ced2bdf72cb956d11732f4399791590577a8839"
-  integrity sha512-708CChOel02O9FEqOIedpc2bxp/tsTLBmxKVzlXXMm48h1kyttx4rCncKwXZBMrdcs1/CGz21j1mKWmSb7NxJQ==
-  dependencies:
-    ora "^3.0.0"
-    requirejs "^2.3.6"
-    simple-git "^1.106.0"
-    winston "^2.4.0"
-    yarn "^1.12.3"
-
-"@cantrips/core@0.13.17":
-  version "0.13.17"
-  resolved "https://registry.yarnpkg.com/@cantrips/core/-/core-0.13.17.tgz#6a5c5c75e0b316e67e3e2e4f60c9774e70fee996"
-  integrity sha512-iGNTkZ5y1naJNGK+ygcohr4RhCqYM2pou9JRBH5j0HcP92DUkkg7Rz0uzy/A4IkxQhz3eatZv1nx0ULrwtc5IQ==
+"@cantrips/core@0.13.19":
+  version "0.13.19"
+  resolved "https://registry.yarnpkg.com/@cantrips/core/-/core-0.13.19.tgz#b7c55a27695c08a03b75578854c11f265f087647"
+  integrity sha512-TYqTtfYTLzkGMe5tPXdABM+L1COknfBsRg1VZyWq5n4w6VnoKRB9k9nAiVKNYa8N/7drRAIUKh7/ptP1w63QuQ==
   dependencies:
     "@babel/runtime" "7.1.2"
     ora "^3.0.0"
