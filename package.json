@@ -29,7 +29,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "@cantrips/basemodules": "0.12.19",
+    "@cantrips/basemodules": "0.12.20",
     "@cantrips/core": "0.13.19",
     "@babel/runtime": "7.2.0",
     "commander": "^2.12.2",

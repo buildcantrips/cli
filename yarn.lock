@@ -684,10 +684,10 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@cantrips/basemodules@0.12.18":
-  version "0.12.18"
-  resolved "https://registry.yarnpkg.com/@cantrips/basemodules/-/basemodules-0.12.18.tgz#ed7fc8db701ca423c083b143ec8351e7f862f62d"
-  integrity sha512-z2KfaJvvDaj8hcQdB2tWM1cAlamLY6MAA2s3IzrwxrifWBpjfbqdqfZGIUZhMS92tiF7Bxb4ORSu0HynPOsAvw==
+"@cantrips/basemodules@0.12.20":
+  version "0.12.20"
+  resolved "https://registry.yarnpkg.com/@cantrips/basemodules/-/basemodules-0.12.20.tgz#66dbaeb6a51224da802b20e28f78b3c8ce9d5ac6"
+  integrity sha512-PFT+8PoYOc3RNIG6nAzwmA3j2p0Uu/3hlJb8ZJNF654akV+rjY73yNZZLvwp+Mf122FUDT7S4uRn6niY7kYGzA==
   dependencies:
     "@babel/register" "^7.0.0"
     "@babel/runtime" "7.1.2"
