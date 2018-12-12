@@ -30,13 +30,12 @@
   },
   "dependencies": {
     "@cantrips/basemodules": "0.12.21",
-    "@cantrips/core": "0.13.19",
+    "@cantrips/core": "0.13.20",
     "@babel/runtime": "7.2.0",
     "commander": "^2.12.2",
     "fs-extra": "^7.0.1",
     "simple-git": "^1.107.0",
-    "tmp": "0.0.33",
-    "winston": "^2.4.0"
+    "tmp": "0.0.33"
   },
   "scripts": {
     "test": "echo 'ok'",

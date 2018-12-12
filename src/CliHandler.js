@@ -8,6 +8,14 @@ export function attachMiscCliCommands(program) {
   program.command("listModules").action(() => {
     ModuleRegistry.listModules()
   })
+
+  program.on("command:*", function() {
+    throw new Error(
+      `Invalid command: ${program.args.join(
+        " "
+      )}\n\tSee --help for a list of available commands.`
+    )
+  })
 }
 
 const getRealArgumentNames = optionNames =>
@@ -55,8 +63,7 @@ function registerActionForCommand(command, descriptor) {
       : Object.keys(descriptor.exposed)
 
     if (!validActions.includes(action)) {
-      Logger.error(`${action} is not an action of ${descriptor.name}`)
-      process.exit(-1)
+      throw `${action} is not an action of ${descriptor.name}`
     }
 
     Logger.debug(
