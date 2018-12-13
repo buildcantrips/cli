@@ -32,7 +32,9 @@ import * as Cli from "nested-yargs";
 
   app = attachMiscCliCommands(app)
 
-  Cli.run(app)
+  if (process.env.NODE_ENV !== "test") {
+    Cli.run(app)
+  }
 })()
 
 process.on("uncaughtException", function(err) {
