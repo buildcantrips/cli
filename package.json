@@ -29,13 +29,14 @@
     "testEnvironment": "node"
   },
   "dependencies": {
+    "@babel/runtime": "7.2.0",
     "@cantrips/basemodules": "0.12.21",
     "@cantrips/core": "0.13.20",
-    "@babel/runtime": "7.2.0",
-    "commander": "^2.12.2",
     "fs-extra": "^7.0.1",
+    "nested-yargs": "^1.0.7",
     "simple-git": "^1.107.0",
-    "tmp": "0.0.33"
+    "tmp": "0.0.33",
+    "yargs": "^12.0.5"
   },
   "scripts": {
     "test": "echo 'ok'",

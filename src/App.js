@@ -1,6 +1,5 @@
 #! /usr/bin/env node
 
-import pjson from "../package.json"
 import { ConfigParser, Logger } from "@cantrips/core"
 import ModuleRegistry from "./ModuleRegistry"
 import {
@@ -8,9 +7,7 @@ import {
   attachMiscCliCommands
 } from "./CliHandler"
 
-import program from "commander"
-
-program.version(pjson.version);
+import * as Cli from "nested-yargs";
 
 (async () => {
   ModuleRegistry.registerRequiredModule(require("@cantrips/basemodules"))
@@ -26,13 +23,16 @@ program.version(pjson.version);
     )
   }
 
-  generateCliCommandsForModules(program, ModuleRegistry.getRegisteredModules())
+  let app = Cli.createApp()
 
-  attachMiscCliCommands(program)
+  app = await generateCliCommandsForModules(
+    app,
+    ModuleRegistry.getRegisteredModules()
+  )
 
-  program.parse(process.argv)
+  app = attachMiscCliCommands(app)
 
-  if (!program.args.length) program.help()
+  Cli.run(app)
 })()
 
 process.on("uncaughtException", function(err) {
@@ -40,10 +40,10 @@ process.on("uncaughtException", function(err) {
   process.exit(-1)
 })
 
-process.on("unhandledRejection", function(reason) {
-  Logger.error(reason.message)
+process.on("unhandledRejection", function(error) {
+  Logger.error(error.message)
   if (process.env.DEBUG) {
-    Logger.error(reason)
+    Logger.error(error.stack)
   }
   process.exit(-1)
 })
