@@ -38,6 +38,7 @@ export function attachMiscCliCommands(app) {
 
 function generateOptionsForCommand(descriptor, actionName) {
   const options = {}
+
   descriptor.parameters.forEach(parameter => {
     options[parameter.name] = {
       description: parameter.description,
@@ -83,7 +84,6 @@ async function attachSubCommandsForModule(moduleCli, descriptor) {
                 descriptor.name
               } ${actionName} with options: ${argv._.slice(2).join(" ")}`
             )
-
             actor[actionName](argv)
           }
         }
@@ -102,10 +102,7 @@ export function generateCliCommandsForModules(app, registeredModules) {
 }
 
 async function generateCliCommandsForModule(app, module, descriptor) {
-  var moduleCli = Cli.createCategory(
-    module,
-    (descriptor.meta && descriptor.meta.description) || "TBD"
-  )
+  var moduleCli = Cli.createCategory(module, descriptor.description || "TBD")
 
   moduleCli = await attachSubCommandsForModule(moduleCli, descriptor)
   app.command(moduleCli)

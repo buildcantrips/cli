@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.2.0",
-    "@cantrips/basemodules": "0.12.21",
+    "@cantrips/basemodules": "0.12.22",
     "@cantrips/core": "0.13.20",
     "fs-extra": "^7.0.1",
     "nested-yargs": "^1.0.7",
