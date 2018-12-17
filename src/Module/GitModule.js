@@ -4,7 +4,7 @@ import fs from "fs-extra"
 import Module from "./Module"
 import ModuleTypes from "./ModuleTypes"
 
-import { ProcessUtils } from "@cantrips/core"
+import { ProcessUtils, Logger } from "@cantrips/core"
 
 export default class GitModule extends Module {
   constructor(moduleName, version) {
@@ -44,6 +44,22 @@ export default class GitModule extends Module {
         }
       )
       return require(`${moduleDirectory}`)
+    })
+  }
+
+  async loadModuleFromCache(modulesFolderPath) {
+    return this._loadModuleFromCache(modulesFolderPath, async () => {
+      const moduleFullPath = path.join(modulesFolderPath, this.path)
+      var result = await ProcessUtils.runCommand(
+        `cd ${moduleFullPath} && git fetch && git diff @{upstream} | cat`
+      )
+
+      if (result) {
+        Logger.debug(
+          `Pulling new version for module ${this.name} from ${this.version}`
+        )
+        await ProcessUtils.runCommand(`cd ${moduleFullPath} && git pull`)
+      }
     })
   }
 }
