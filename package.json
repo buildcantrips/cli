@@ -36,7 +36,7 @@
     "fs-extra": "^7.0.1",
     "nested-yargs": "^1.0.7",
     "simple-git": "^1.107.0",
-    "tmp": "0.0.33",
+    "tmp": "^0.0.33",
     "yargs": "^12.0.5"
   },
   "scripts": {
