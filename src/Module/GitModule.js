@@ -38,7 +38,7 @@ export default class GitModule extends Module {
       // todo fix babel reference
       await ProcessUtils.runCommand(
         `cd ${moduleDirectory} && node_modules/.bin/babel src -d lib`,
-        "Runing babel build",
+        "Runming babel build",
         {
           silent: true
         }
@@ -51,7 +51,11 @@ export default class GitModule extends Module {
     return this._loadModuleFromCache(modulesFolderPath, async () => {
       const moduleFullPath = path.join(modulesFolderPath, this.path)
       var result = await ProcessUtils.runCommand(
-        `cd ${moduleFullPath} && git fetch && git diff @{upstream} | cat`
+        `cd ${moduleFullPath} && git fetch && git diff @{upstream} | cat`,
+        "Updating module from git",
+        {
+          silent: true
+        }
       )
 
       if (result) {
