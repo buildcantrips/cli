@@ -2,12 +2,12 @@ import { Logger } from "@cantrips/core"
 import fs from "fs-extra"
 import path from "path"
 
+// Assumes the modules save themselves to modulesFolderPath
 export class ModuleCache {
   _cachedModules = []
 
-  constructor(modulesPath) {
-    this.cantripsFolderPath = modulesPath
-    this.modulesFolderPath = path.join(this.cantripsFolderPath, "modules")
+  constructor(modulesFolderPath) {
+    this.modulesFolderPath = modulesFolderPath
     this.modulesDescriptorPath = path.join(this.modulesFolderPath, "modules.json")
     this._initializeCache()
   }
@@ -29,7 +29,6 @@ export class ModuleCache {
   }
 
   _initializeCache() {
-    fs.ensureDirSync(this.cantripsFolderPath)
     fs.ensureDirSync(this.modulesFolderPath)
     if (!fs.existsSync(this.modulesDescriptorPath)) {
       fs.writeFileSync(this.modulesDescriptorPath, JSON.stringify({ modules: [] }, null, 2))

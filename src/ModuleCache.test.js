@@ -8,13 +8,13 @@ import fs from "fs-extra"
 
 import { expect } from "chai"
 
-let testModulesPath
+let testModulesFolderPath
 let testModulesCleanup
 
 describe("ModuleCache", () => {
   beforeEach(() => {
     const tmpobj = tmp.dirSync({ unsafeCleanup: true })
-    testModulesPath = tmpobj.name
+    testModulesFolderPath = tmpobj.name
     testModulesCleanup = tmpobj.removeCallback
   })
   afterEach(() => {
@@ -23,10 +23,12 @@ describe("ModuleCache", () => {
   describe("initialization", () => {
     it("should load module from file descriptor on initialization", () => {
       const testModule = { name: "testModule", version: "1.0.0" }
-      const modulesDir = path.join(testModulesPath, "modules")
-      fs.ensureDirSync(modulesDir)
-      fs.writeFileSync(path.join(modulesDir, "modules.json"), JSON.stringify({ modules: [testModule] }, null, 2))
-      const cache = new ModuleCache(testModulesPath)
+      fs.ensureDirSync(testModulesFolderPath)
+      fs.writeFileSync(
+        path.join(testModulesFolderPath, "modules.json"),
+        JSON.stringify({ modules: [testModule] }, null, 2)
+      )
+      const cache = new ModuleCache(testModulesFolderPath)
       const module = new Module(testModule.name, testModule.version)
       expect(cache.isModuleCached(module)).to.equal(true)
     })
@@ -34,7 +36,7 @@ describe("ModuleCache", () => {
   describe("isModuleCached", () => {
     let cache, module
     beforeEach(() => {
-      cache = new ModuleCache(testModulesPath)
+      cache = new ModuleCache(testModulesFolderPath)
       module = new Module("testModule", "1.0.0")
     })
     it("returns false if the module is not cached", async () => {
@@ -52,11 +54,11 @@ describe("ModuleCache", () => {
   })
   describe("cacheModule", () => {
     it("saves the cache descriptor to the modules path", async () => {
-      const cache = new ModuleCache(testModulesPath)
+      const cache = new ModuleCache(testModulesFolderPath)
       const testModule = { name: "testModule", version: "1.0.0" }
       const module = new Module(testModule.name, testModule.version)
       cache.cacheModule(module)
-      const descriptorPath = path.join(testModulesPath, "modules", "modules.json")
+      const descriptorPath = path.join(testModulesFolderPath, "modules.json")
       expect(fs.existsSync(descriptorPath)).to.equal(true)
       expect(JSON.parse(fs.readFileSync(descriptorPath))).to.deep.equal({ modules: [testModule] })
     })
