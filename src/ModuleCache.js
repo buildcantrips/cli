@@ -35,6 +35,7 @@ export class ModuleCache {
     }
     this.cachedModulesDescriptor = JSON.parse(fs.readFileSync(this.modulesDescriptorPath))
     this._cachedModules = this.cachedModulesDescriptor.modules
+    Logger.debug(`ModuleCache initialized on path: ${this.modulesFolderPath}`)
   }
 
   _saveModuleCacheDescriptor() {
