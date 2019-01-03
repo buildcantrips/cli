@@ -28,23 +28,27 @@ export default class GitModule extends Module {
           silent: true
         }
       )
-      await ProcessUtils.runCommand(
-        `cd ${moduleDirectory} && npm i`,
-        "Installing dependencies",
-        {
-          silent: true
-        }
-      )
-      // todo fix babel reference
-      await ProcessUtils.runCommand(
-        `cd ${moduleDirectory} && node_modules/.bin/babel src -d lib`,
-        "Runming babel build",
-        {
-          silent: true
-        }
-      )
+      await this.installAndBuildModule(moduleDirectory)
       return require(`${moduleDirectory}`)
     })
+  }
+
+  async installAndBuildModule(moduleDirectory) {
+    await ProcessUtils.runCommand(
+      `cd ${moduleDirectory} && npm i`,
+      "Installing dependencies",
+      {
+        silent: true
+      }
+    )
+    // todo fix babel reference
+    await ProcessUtils.runCommand(
+      `cd ${moduleDirectory} && node_modules/.bin/babel src -d lib`,
+      "Running babel build",
+      {
+        silent: true
+      }
+    )
   }
 
   async loadModuleFromCache(modulesFolderPath) {
@@ -62,7 +66,10 @@ export default class GitModule extends Module {
         Logger.debug(
           `Pulling new version for module ${this.name} from ${this.version}`
         )
-        await ProcessUtils.runCommand(`cd ${moduleFullPath} && git pull`)
+        await ProcessUtils.runCommand(`cd ${moduleFullPath} && git pull`, "", {
+          silent: true
+        })
+        await this.installAndBuildModule(moduleFullPath)
       }
     })
   }
