@@ -1,5 +1,0 @@
-{
-    "modules": {
-        "cantrips-emarsys": "git@git.emarsys.net:systec-automation/cantrips-emarsys.git"
-    }
-}
