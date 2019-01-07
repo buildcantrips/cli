@@ -40,13 +40,14 @@ export function attachMiscCliCommands(app) {
 
 function generateOptionsForCommand(descriptor, actionName) {
   const options = {}
-
-  descriptor.parameters.forEach(parameter => {
-    options[parameter.name] = {
-      description: parameter.description,
-      boolean: parameter.flag
-    }
-  })
+  if (descriptor.parameters) {
+    descriptor.parameters.forEach(parameter => {
+      options[parameter.name] = {
+        description: parameter.description,
+        boolean: parameter.flag
+      }
+    })
+  }
 
   if (descriptor.exposed[actionName] && descriptor.exposed[actionName].parameters) {
     descriptor.exposed[actionName].parameters.forEach(parameter => {
@@ -90,7 +91,7 @@ async function attachSubCommandsForModule(moduleCli, descriptor, moduleSetting) 
 export function generateCliCommandsForModules(app, registeredModules, config) {
   Object.entries(registeredModules).forEach(([module, descriptor]) => {
     const moduleSetting = config[module] || {}
-    generateCliCommandsForModule(app, module, descriptor, moduleSetting)
+    generateCliCommandsForModule(app, module, descriptor, moduleSetting) // TODO: await
   })
   return app
 }
