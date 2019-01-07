@@ -12,7 +12,7 @@ const DEFAULT_CANTRIPS_FOLDER_PATH = path.join(os.homedir(), ".cantrips")
 class ModuleRegistry {
   constructor(modulesPath = DEFAULT_CANTRIPS_FOLDER_PATH) {
     this.cantripsFolderPath = modulesPath
-    this.registeredModules = []
+    this.registeredModules = {}
     this.modulesFolderPath = path.join(this.cantripsFolderPath, "modules")
     this.moduleFactory = new ModuleFactory()
     this.initializeRegistry()
