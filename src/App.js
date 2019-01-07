@@ -5,7 +5,6 @@ import ModuleRegistry from "./ModuleRegistry"
 import { generateCliCommandsForModules, attachMiscCliCommands } from "./CliHandler"
 
 import * as Cli from "nested-yargs"
-
 ;(async () => {
   ModuleRegistry.registerRequiredModule(require("@cantrips/basemodules"))
   const config = await ConfigParser.parseConfig()
@@ -19,7 +18,7 @@ import * as Cli from "nested-yargs"
 
   let app = Cli.createApp()
 
-  app = await generateCliCommandsForModules(app, ModuleRegistry.getRegisteredModules())
+  app = await generateCliCommandsForModules(app, ModuleRegistry.getRegisteredModules(), config)
 
   app = attachMiscCliCommands(app)
   if (process.env.NODE_ENV !== "test") {

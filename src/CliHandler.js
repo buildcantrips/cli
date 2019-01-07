@@ -5,6 +5,12 @@ import packageJson from "../package.json"
 
 import * as Cli from "nested-yargs"
 
+const removeUndefinedProperites = obj =>
+  Object.keys(obj).reduce((acc, key) => {
+    if (obj[key]) acc[key] = obj[key]
+    return acc
+  }, {})
+
 export function attachMiscCliCommands(app) {
   app.command(
     Cli.createCommand("describeCI", "Prints the information about the current CI environment.", {
@@ -54,7 +60,7 @@ function generateOptionsForCommand(descriptor, actionName) {
   return options
 }
 
-async function attachSubCommandsForModule(moduleCli, descriptor) {
+async function attachSubCommandsForModule(moduleCli, descriptor, moduleSetting) {
   //temporary backward compatibility
   let validActions = Array.isArray(descriptor.exposed) ? descriptor.exposed : Object.keys(descriptor.exposed)
 
@@ -66,9 +72,12 @@ async function attachSubCommandsForModule(moduleCli, descriptor) {
         {
           options: generateOptionsForCommand(descriptor, actionName),
           handler: async function(argv) {
-            const actor = await new descriptor["type"](argv)
+            const actor = await new descriptor["type"]({
+              ...removeUndefinedProperites(moduleSetting),
+              ...removeUndefinedProperites(argv)
+            })
             Logger.debug(`Running command ${descriptor.name} ${actionName} with options: ${argv._.slice(2).join(" ")}`)
-            actor[actionName](argv)
+            actor[actionName]({ ...removeUndefinedProperites(moduleSetting), ...removeUndefinedProperites(argv) })
           }
         }
       )
@@ -78,17 +87,18 @@ async function attachSubCommandsForModule(moduleCli, descriptor) {
   return moduleCli
 }
 
-export function generateCliCommandsForModules(app, registeredModules) {
+export function generateCliCommandsForModules(app, registeredModules, config) {
   Object.entries(registeredModules).forEach(([module, descriptor]) => {
-    generateCliCommandsForModule(app, module, descriptor)
+    const moduleSetting = config[module] || {}
+    generateCliCommandsForModule(app, module, descriptor, moduleSetting)
   })
   return app
 }
 
-async function generateCliCommandsForModule(app, module, descriptor) {
+async function generateCliCommandsForModule(app, module, descriptor, moduleSetting) {
   var moduleCli = Cli.createCategory(module, descriptor.description || "TBD")
 
-  moduleCli = await attachSubCommandsForModule(moduleCli, descriptor)
+  moduleCli = await attachSubCommandsForModule(moduleCli, descriptor, moduleSetting)
   app.command(moduleCli)
   return app
 }
