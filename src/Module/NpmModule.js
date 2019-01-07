@@ -20,23 +20,16 @@ export default class NpmModule extends Module {
       const moduleDirectory = path.join(modulesFolderPath, this.path)
       fs.emptyDirSync(moduleDirectory)
 
-      await ProcessUtils.runCommand(
-        `cd ${tempDir.name} && npm init --force`,
-        "",
-        {
-          silent: true
-        }
-      )
+      await ProcessUtils.runCommand(`cd ${tempDir.name} && npm init --force`, "", {
+        silent: true
+      })
       await ProcessUtils.runCommand(
         `cd ${tempDir.name} && npm install ${this.name}@${this.version}`,
         `Installing module ${this.name}@${this.version}`,
         { silent: true }
       )
 
-      fs.copySync(
-        path.join(tempDir.name, "node_modules", this.name),
-        moduleDirectory
-      )
+      fs.copySync(path.join(tempDir.name, "node_modules", this.name), moduleDirectory)
       await ProcessUtils.runCommand(
         `cd ${moduleDirectory} && npm install`,
         `Installing dependencies for ${this.name}@${this.version}`,

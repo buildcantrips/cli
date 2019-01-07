@@ -2,33 +2,24 @@
 
 import { ConfigParser, Logger } from "@cantrips/core"
 import ModuleRegistry from "./ModuleRegistry"
-import {
-  generateCliCommandsForModules,
-  attachMiscCliCommands
-} from "./CliHandler"
+import { generateCliCommandsForModules, attachMiscCliCommands } from "./CliHandler"
 
-import * as Cli from "nested-yargs";
+import * as Cli from "nested-yargs"
 
-(async () => {
+;(async () => {
   ModuleRegistry.registerRequiredModule(require("@cantrips/basemodules"))
   const config = await ConfigParser.parseConfig()
   if (config && config.modules) {
     await Promise.all(
       Object.keys(config.modules).map(async moduleName => {
-        return ModuleRegistry.registerModule(
-          moduleName,
-          config.modules[moduleName]
-        )
+        return ModuleRegistry.registerModule(moduleName, config.modules[moduleName])
       })
     )
   }
 
   let app = Cli.createApp()
 
-  app = await generateCliCommandsForModules(
-    app,
-    ModuleRegistry.getRegisteredModules()
-  )
+  app = await generateCliCommandsForModules(app, ModuleRegistry.getRegisteredModules())
 
   app = attachMiscCliCommands(app)
   if (process.env.NODE_ENV !== "test") {

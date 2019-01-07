@@ -7,15 +7,11 @@ import * as Cli from "nested-yargs"
 
 export function attachMiscCliCommands(app) {
   app.command(
-    Cli.createCommand(
-      "describeCI",
-      "Prints the information about the current CI environment.",
-      {
-        handler: function() {
-          new ParameterProvider().describeCI()
-        }
+    Cli.createCommand("describeCI", "Prints the information about the current CI environment.", {
+      handler: function() {
+        new ParameterProvider().describeCI()
       }
-    )
+    })
   )
 
   app.command(
@@ -46,10 +42,7 @@ function generateOptionsForCommand(descriptor, actionName) {
     }
   })
 
-  if (
-    descriptor.exposed[actionName] &&
-    descriptor.exposed[actionName].parameters
-  ) {
+  if (descriptor.exposed[actionName] && descriptor.exposed[actionName].parameters) {
     descriptor.exposed[actionName].parameters.forEach(parameter => {
       options[parameter.name] = {
         description: parameter.description,
@@ -63,27 +56,18 @@ function generateOptionsForCommand(descriptor, actionName) {
 
 async function attachSubCommandsForModule(moduleCli, descriptor) {
   //temporary backward compatibility
-  let validActions = Array.isArray(descriptor.exposed)
-    ? descriptor.exposed
-    : Object.keys(descriptor.exposed)
+  let validActions = Array.isArray(descriptor.exposed) ? descriptor.exposed : Object.keys(descriptor.exposed)
 
   validActions.forEach(actionName => {
     moduleCli.command(
       Cli.createCommand(
         actionName,
-        (descriptor.exposed[actionName] &&
-          descriptor.exposed[actionName].description) ||
-          "TBD",
+        (descriptor.exposed[actionName] && descriptor.exposed[actionName].description) || "TBD",
         {
           options: generateOptionsForCommand(descriptor, actionName),
           handler: async function(argv) {
             const actor = await new descriptor["type"](argv)
-
-            Logger.debug(
-              `Running command ${
-                descriptor.name
-              } ${actionName} with options: ${argv._.slice(2).join(" ")}`
-            )
+            Logger.debug(`Running command ${descriptor.name} ${actionName} with options: ${argv._.slice(2).join(" ")}`)
             actor[actionName](argv)
           }
         }

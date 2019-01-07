@@ -34,13 +34,9 @@ export default class GitModule extends Module {
   }
 
   async installAndBuildModule(moduleDirectory) {
-    await ProcessUtils.runCommand(
-      `cd ${moduleDirectory} && npm i`,
-      "Installing dependencies",
-      {
-        silent: true
-      }
-    )
+    await ProcessUtils.runCommand(`cd ${moduleDirectory} && npm i`, "Installing dependencies", {
+      silent: true
+    })
     // todo fix babel reference
     await ProcessUtils.runCommand(
       `cd ${moduleDirectory} && node_modules/.bin/babel src -d lib`,
@@ -63,9 +59,7 @@ export default class GitModule extends Module {
       )
 
       if (result) {
-        Logger.debug(
-          `Pulling new version for module ${this.name} from ${this.version}`
-        )
+        Logger.debug(`Pulling new version for module ${this.name} from ${this.version}`)
         await ProcessUtils.runCommand(`cd ${moduleFullPath} && git pull`, "", {
           silent: true
         })
