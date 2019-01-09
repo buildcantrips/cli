@@ -88,7 +88,7 @@ async function attachSubCommandsForModule(moduleCli, descriptor, moduleSetting) 
   return moduleCli
 }
 
-export function generateCliCommandsForModules(app, registeredModules, config) {
+export function generateCliCommandsForModules(app, registeredModules, config = {}) {
   Object.entries(registeredModules).forEach(([module, descriptor]) => {
     const moduleSetting = config[module] || {}
     generateCliCommandsForModule(app, module, descriptor, moduleSetting) // TODO: await
