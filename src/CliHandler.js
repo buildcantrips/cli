@@ -61,6 +61,25 @@ function generateOptionsForCommand(descriptor, actionName) {
   return options
 }
 
+export const createCommandHandler = (descriptor, actionName, moduleSetting, timeout) => argv =>
+  Promise.race([
+    new Promise(async resolve => {
+      const actor = await new descriptor["type"]({
+        ...removeUndefinedProperites(moduleSetting),
+        ...removeUndefinedProperites(argv)
+      })
+      Logger.debug(`Running command ${descriptor.name} ${actionName} with options: ${argv._.slice(2).join(" ")}`)
+      resolve(
+        await actor[actionName]({ ...removeUndefinedProperites(moduleSetting), ...removeUndefinedProperites(argv) })
+      )
+    }),
+    new Promise((_, reject) =>
+      setTimeout(() => {
+        reject(`Operations timed out after ${timeout} ms`)
+      }, timeout)
+    )
+  ])
+
 async function attachSubCommandsForModule(moduleCli, descriptor, moduleSetting) {
   //temporary backward compatibility
   let validActions = Array.isArray(descriptor.exposed) ? descriptor.exposed : Object.keys(descriptor.exposed)
@@ -72,14 +91,7 @@ async function attachSubCommandsForModule(moduleCli, descriptor, moduleSetting) 
         (descriptor.exposed[actionName] && descriptor.exposed[actionName].description) || "TBD",
         {
           options: generateOptionsForCommand(descriptor, actionName),
-          handler: async function(argv) {
-            const actor = await new descriptor["type"]({
-              ...removeUndefinedProperites(moduleSetting),
-              ...removeUndefinedProperites(argv)
-            })
-            Logger.debug(`Running command ${descriptor.name} ${actionName} with options: ${argv._.slice(2).join(" ")}`)
-            actor[actionName]({ ...removeUndefinedProperites(moduleSetting), ...removeUndefinedProperites(argv) })
-          }
+          handler: createCommandHandler(descriptor, actionName, moduleSetting, 10000)
         }
       )
     )
@@ -89,9 +101,9 @@ async function attachSubCommandsForModule(moduleCli, descriptor, moduleSetting) 
 }
 
 export function generateCliCommandsForModules(app, registeredModules, config = {}) {
-  Object.entries(registeredModules).forEach(([module, descriptor]) => {
+  Object.entries(registeredModules).forEach(async ([module, descriptor]) => {
     const moduleSetting = config[module] || {}
-    generateCliCommandsForModule(app, module, descriptor, moduleSetting) // TODO: await
+    await generateCliCommandsForModule(app, module, descriptor, moduleSetting)
   })
   return app
 }

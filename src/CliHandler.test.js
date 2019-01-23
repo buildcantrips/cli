@@ -1,7 +1,15 @@
-import { expect } from "chai"
+import chai, { expect } from "chai"
+const chaiAsPromised = require("chai-as-promised")
+
+chai.use(chaiAsPromised)
 
 import * as Cli from "nested-yargs"
-import { generateCliCommandsForModules } from "./CliHandler"
+import { generateCliCommandsForModules, createCommandHandler } from "./CliHandler"
+
+const sleep = ms =>
+  new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
 
 const validModuleName = "test-module"
 const validCommandName = "test-command"
@@ -35,6 +43,19 @@ const minimalTestModules = {
       [validCommandName]: {}
     }
   }
+}
+
+const createTestCommandHandler = ({ commandAction, timeout }) => {
+  class Test {
+    async [validCommandName]() {
+      return commandAction()
+    }
+  }
+  const descriptor = {
+    type: Test
+  }
+  const commandHandler = createCommandHandler(descriptor, validCommandName, {}, timeout)
+  return () => commandHandler({ _: [] })
 }
 
 describe("CliHandler", () => {
@@ -90,6 +111,28 @@ describe("CliHandler", () => {
             app.commands[validModuleName].commands[validCommandName].options.options[testParam.name].description
           ).to.equal(testParam.description)
         })
+      })
+    })
+  })
+  describe("createCommandHandler", () => {
+    describe("timeout", () => {
+      it("rejects with timeout error if action takes more time than the timeout", () => {
+        const commandHandler = createTestCommandHandler({
+          commandAction: () => sleep(30),
+          timeout: 10
+        })
+        return expect(commandHandler()).to.be.rejectedWith(/timed out/)
+      })
+      it("resolves with the command resolve value if the command takes less time than the timeout", () => {
+        const testCommandResolveValue = "test-resolve-value"
+        const commandHandler = createTestCommandHandler({
+          commandAction: async () => {
+            await sleep(10)
+            return testCommandResolveValue
+          },
+          timeout: 30
+        })
+        return expect(commandHandler()).to.eventually.equal(testCommandResolveValue)
       })
     })
   })
