@@ -45,17 +45,17 @@ const minimalTestModules = {
   }
 }
 
-const createTestCommandHandler = ({ commandAction, timeout }) => {
+const createTestCommandHandler = ({ commandAction, timeout, descriptor, isModuleExpectedToHandleTimeout }) => {
   class Test {
     async [validCommandName]() {
       return commandAction()
     }
   }
-  const descriptor = {
-    type: Test
+  const testDescriptor = {
+    type: Test,
+    ...descriptor
   }
-  const commandHandler = createCommandHandler(descriptor, validCommandName, {}, timeout)
-  return () => commandHandler({ _: [] })
+  return createCommandHandler(testDescriptor, validCommandName, {}, timeout, isModuleExpectedToHandleTimeout)
 }
 
 describe("CliHandler", () => {
@@ -102,8 +102,10 @@ describe("CliHandler", () => {
             testModules[validModuleName].exposed[validCommandName].parameters[0].name
           )
         })
-        it("should register command with no parameters", () => {
-          expect(minimalApp.commands[validModuleName].commands[validCommandName].options.options).to.be.empty
+        it("should register command with no module parameters, and attach default cli paramters", () => {
+          expect(minimalApp.commands[validModuleName].commands[validCommandName].options.options).to.have.keys([
+            "timeout"
+          ])
         })
         it("should add description to command parameter", () => {
           const testParam = testModules[validModuleName].exposed[validCommandName].parameters[0]
@@ -118,10 +120,10 @@ describe("CliHandler", () => {
     describe("timeout", () => {
       it("rejects with timeout error if action takes more time than the timeout", () => {
         const commandHandler = createTestCommandHandler({
-          commandAction: () => sleep(30),
-          timeout: 10
+          commandAction: () => sleep(35),
+          timeout: 20
         })
-        return expect(commandHandler()).to.be.rejectedWith(/timed out/)
+        return expect(commandHandler({})).to.be.rejectedWith(/timed out/)
       })
       it("resolves with the command resolve value if the command takes less time than the timeout", () => {
         const testCommandResolveValue = "test-resolve-value"
@@ -132,7 +134,26 @@ describe("CliHandler", () => {
           },
           timeout: 30
         })
-        return expect(commandHandler()).to.eventually.equal(testCommandResolveValue)
+        return expect(commandHandler({})).to.eventually.equal(testCommandResolveValue)
+      })
+      it("rejects timeout error if command does not timeout despite a timeout option provided", () => {
+        const testCommandResolveValue = "test-resolve-value"
+        const timeoutProvidedAsCliOption = 20
+        const commandHandler = createTestCommandHandler({
+          commandAction: async () => {
+            await sleep(timeoutProvidedAsCliOption * 2 + 1)
+            return testCommandResolveValue
+          },
+          descriptor: {
+            parameters: {
+              timeout: {
+                description: "Timeout module parameter"
+              }
+            }
+          },
+          isModuleExpectedToHandleTimeout: true
+        })
+        return expect(commandHandler({ timeout: timeoutProvidedAsCliOption })).to.be.rejectedWith(/timed out/)
       })
     })
   })

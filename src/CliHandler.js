@@ -5,7 +5,7 @@ import packageJson from "../package.json"
 
 import * as Cli from "nested-yargs"
 
-const removeUndefinedProperites = obj =>
+const removeUndefinedProperites = (obj = {}) =>
   Object.keys(obj).reduce((acc, key) => {
     if (obj[key]) acc[key] = obj[key]
     return acc
@@ -38,6 +38,10 @@ export function attachMiscCliCommands(app) {
   return app
 }
 
+const DEFAUL_OPTIONS = {
+  timeout: 60000
+}
+
 function generateOptionsForCommand(descriptor, actionName) {
   const options = {}
   if (descriptor.parameters) {
@@ -61,37 +65,73 @@ function generateOptionsForCommand(descriptor, actionName) {
   return options
 }
 
-export const createCommandHandler = (descriptor, actionName, moduleSetting, timeout) => argv =>
-  Promise.race([
+export const createCommandHandler = (
+  descriptor,
+  actionName,
+  moduleSetting,
+  defaultTimeout,
+  isModuleExpectedToHandleTimeout
+) => argv => {
+  const commandOptions = removeUndefinedProperites(argv)
+  let commandTimeout = argv.timeout || defaultTimeout
+  if (isModuleExpectedToHandleTimeout) {
+    commandTimeout *= 2
+  } else {
+    delete commandOptions.timeout
+  }
+  delete commandOptions._
+  delete commandOptions.help
+  delete commandOptions["$0"]
+  return Promise.race([
     new Promise(async resolve => {
       const actor = await new descriptor["type"]({
         ...removeUndefinedProperites(moduleSetting),
-        ...removeUndefinedProperites(argv)
+        ...commandOptions
       })
-      Logger.debug(`Running command ${descriptor.name} ${actionName} with options: ${argv._.slice(2).join(" ")}`)
-      resolve(
-        await actor[actionName]({ ...removeUndefinedProperites(moduleSetting), ...removeUndefinedProperites(argv) })
+      Logger.debug(
+        `Running command ${descriptor.name} ${actionName} with options: ${JSON.stringify(commandOptions, null, 2)}`
       )
+      resolve(await actor[actionName]({ ...removeUndefinedProperites(moduleSetting), ...commandOptions }))
     }),
     new Promise((_, reject) =>
       setTimeout(() => {
-        reject(`Operations timed out after ${timeout} ms`)
-      }, timeout)
+        if (isModuleExpectedToHandleTimeout) {
+          Logger.warn(
+            `Your module defined a timeout option, but did not teminate after two times the provided timeout.`
+          )
+        }
+        reject(`Operations timed out after ${commandTimeout} ms`)
+      }, commandTimeout)
     )
   ])
+}
 
 async function attachSubCommandsForModule(moduleCli, descriptor, moduleSetting) {
   //temporary backward compatibility
   let validActions = Array.isArray(descriptor.exposed) ? descriptor.exposed : Object.keys(descriptor.exposed)
 
   validActions.forEach(actionName => {
+    const options = generateOptionsForCommand(descriptor, actionName)
+    const isModuleExpectedToHandleTimeout = !!options.timeout
+    if (!isModuleExpectedToHandleTimeout) {
+      options.timeout = {
+        description: `Timeout for the command, default: ${DEFAUL_OPTIONS.timeout}ms`,
+        boolean: false
+      }
+    }
     moduleCli.command(
       Cli.createCommand(
         actionName,
         (descriptor.exposed[actionName] && descriptor.exposed[actionName].description) || "TBD",
         {
-          options: generateOptionsForCommand(descriptor, actionName),
-          handler: createCommandHandler(descriptor, actionName, moduleSetting, 10000)
+          options,
+          handler: createCommandHandler(
+            descriptor,
+            actionName,
+            moduleSetting,
+            DEFAUL_OPTIONS.timeout,
+            isModuleExpectedToHandleTimeout
+          )
         }
       )
     )
