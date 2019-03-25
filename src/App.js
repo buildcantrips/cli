@@ -34,10 +34,11 @@ process.on("uncaughtException", function(error) {
   process.exit(-1)
 })
 
-process.on("unhandledRejection", function(error) {
-  Logger.error(error.message)
+process.on("unhandledRejection", function(reason, promise) {
+  Logger.error(reason)
+
   if (process.env.DEBUG) {
-    Logger.error(error.stack)
+    Logger.error(promise)
   }
   process.exit(-1)
 })
