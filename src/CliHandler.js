@@ -65,20 +65,9 @@ function generateOptionsForCommand(descriptor, actionName) {
   return options
 }
 
-export const createCommandHandler = (
-  descriptor,
-  actionName,
-  moduleSetting,
-  defaultTimeout,
-  isModuleExpectedToHandleTimeout
-) => argv => {
+export const createCommandHandler = (descriptor, actionName, moduleSetting) => argv => {
   const commandOptions = removeUndefinedProperites(argv)
-  let commandTimeout = argv.timeout || defaultTimeout
-  if (isModuleExpectedToHandleTimeout) {
-    commandTimeout *= 2
-  } else {
-    delete commandOptions.timeout
-  }
+
   delete commandOptions._
   delete commandOptions.help
   delete commandOptions["$0"]

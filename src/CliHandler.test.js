@@ -4,12 +4,7 @@ const chaiAsPromised = require("chai-as-promised")
 chai.use(chaiAsPromised)
 
 import * as Cli from "nested-yargs"
-import { generateCliCommandsForModules, createCommandHandler } from "./CliHandler"
-
-const sleep = ms =>
-  new Promise(resolve => {
-    setTimeout(resolve, ms)
-  })
+import { generateCliCommandsForModules } from "./CliHandler"
 
 const validModuleName = "test-module"
 const validCommandName = "test-command"
@@ -43,19 +38,6 @@ const minimalTestModules = {
       [validCommandName]: {}
     }
   }
-}
-
-const createTestCommandHandler = ({ commandAction, timeout, descriptor, isModuleExpectedToHandleTimeout }) => {
-  class Test {
-    async [validCommandName]() {
-      return commandAction()
-    }
-  }
-  const testDescriptor = {
-    type: Test,
-    ...descriptor
-  }
-  return createCommandHandler(testDescriptor, validCommandName, {}, timeout, isModuleExpectedToHandleTimeout)
 }
 
 describe("CliHandler", () => {
