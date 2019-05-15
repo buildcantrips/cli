@@ -82,28 +82,16 @@ export const createCommandHandler = (
   delete commandOptions._
   delete commandOptions.help
   delete commandOptions["$0"]
-  return Promise.race([
-    new Promise(async resolve => {
-      const actor = await new descriptor["type"]({
-        ...removeUndefinedProperites(moduleSetting),
-        ...commandOptions
-      })
-      Logger.debug(
-        `Running command ${descriptor.name} ${actionName} with options: ${JSON.stringify(commandOptions, null, 2)}`
-      )
-      resolve(await actor[actionName]({ ...removeUndefinedProperites(moduleSetting), ...commandOptions }))
-    }),
-    new Promise((_, reject) =>
-      setTimeout(() => {
-        if (isModuleExpectedToHandleTimeout) {
-          Logger.warn(
-            `Your module defined a timeout option, but did not teminate after two times the provided timeout.`
-          )
-        }
-        reject(`Operations timed out after ${commandTimeout} ms`)
-      }, commandTimeout)
+  return new Promise(async resolve => {
+    const actor = await new descriptor["type"]({
+      ...removeUndefinedProperites(moduleSetting),
+      ...commandOptions
+    })
+    Logger.debug(
+      `Running command ${descriptor.name} ${actionName} with options: ${JSON.stringify(commandOptions, null, 2)}`
     )
-  ])
+    resolve(await actor[actionName]({ ...removeUndefinedProperites(moduleSetting), ...commandOptions }))
+  })
 }
 
 async function attachSubCommandsForModule(moduleCli, descriptor, moduleSetting) {
