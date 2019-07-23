@@ -9,9 +9,9 @@ export default class Module {
   }
 
   async _loadModule(delegate) {
-    return new Promise(async resolve => {
+    return new Promise(resolve => {
       Logger.debug(`Loading module: ${this.name} from ${this.type}`)
-      resolve(await delegate())
+      resolve(delegate())
       Logger.debug(`Loading module: ${this.name} - Success`)
     })
   }

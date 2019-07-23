@@ -71,15 +71,15 @@ export const createCommandHandler = (descriptor, actionName, moduleSetting) => a
   delete commandOptions._
   delete commandOptions.help
   delete commandOptions["$0"]
-  return new Promise(async resolve => {
-    const actor = await new descriptor["type"]({
+  return new Promise(resolve => {
+    const actor = new descriptor["type"]({
       ...removeUndefinedProperites(moduleSetting),
       ...commandOptions
     })
     Logger.debug(
       `Running command ${descriptor.name} ${actionName} with options: ${JSON.stringify(commandOptions, null, 2)}`
     )
-    resolve(await actor[actionName]({ ...removeUndefinedProperites(moduleSetting), ...commandOptions }))
+    resolve(actor[actionName]({ ...removeUndefinedProperites(moduleSetting), ...commandOptions }))
   })
 }
 
