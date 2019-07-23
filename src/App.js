@@ -27,18 +27,18 @@ import * as Cli from "nested-yargs"
 })()
 
 process.on("uncaughtException", function(error) {
-  Logger.error(error.message)
+  Logger.error(error.message || error)
   if (process.env.DEBUG) {
     Logger.error(error.stack)
   }
   process.exit(-1)
 })
 
-process.on("unhandledRejection", function(reason, promise) {
-  Logger.error(reason)
+process.on("unhandledRejection", function(reason) {
+  Logger.error(`ERROR: ${reason.message || reason}`)
 
   if (process.env.DEBUG) {
-    Logger.error(promise)
+    Logger.error(reason.stack)
   }
   process.exit(-1)
 })
