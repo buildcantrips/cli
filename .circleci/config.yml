@@ -22,7 +22,7 @@ jobs:
           command: yarn run babel:build
       - run:
           name: Test
-          command: yarn test
+          command: yarn test:ci
       - store_test_results:
           path: test/junit
       - store_artifacts:
