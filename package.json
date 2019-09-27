@@ -30,12 +30,12 @@
     "all": true
   },
   "dependencies": {
-    "@babel/runtime": "7.5.5",
-    "@cantrips/basemodules": "0.12.24",
-    "@cantrips/core": "0.13.20",
+    "@babel/runtime": "7.6.2",
+    "@cantrips/basemodules": "^0.12.24",
+    "@cantrips/core": "^0.13.20",
     "fs-extra": "^8.1.0",
     "nested-yargs": "^1.0.7",
-    "simple-git": "^1.122.0",
+    "simple-git": "^1.126.0",
     "tmp": "^0.1.0",
     "yargs": "^13.3.0"
   },
@@ -59,7 +59,7 @@
     "babel-plugin-dynamic-import-node-babel-7": "^2.0.7",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^6.1.0",
+    "eslint": "^6.4.0",
     "eslint-config-standard": "^13.0.1",
     "eslint-plugin-chai-friendly": "^0.4.1",
     "eslint-plugin-import": "^2.18.2",
