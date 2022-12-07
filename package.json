@@ -35,7 +35,7 @@
     "@cantrips/core": "^0.13.20",
     "fs-extra": "^8.1.0",
     "nested-yargs": "^1.0.7",
-    "simple-git": "^1.126.0",
+    "simple-git": "^3.15.0",
     "tmp": "^0.1.0",
     "yargs": "^13.3.0"
   },
